@@ -1,79 +1,152 @@
 import Phaser from 'phaser';
-import LinkNESPlayer from '../players/link-nes/link-nes.player';
 
-import LinkNESSprites from '../players/link-nes/link-nes.sprites.png';
-import LinkNES2Sprites from '../players/link-nes-2/link-nes-2.sprites.png';
-import LinkSNESSprites from '../players/link-nes/link-nes.sprites.png';
-import LinkGBCSprites from '../players/link-gbc/link-gbc.sprites.png';
-import LinkGBCJumpingSprites from '../players/link-gbc/link-gbc-jumping.sprites.png';
+import { Player } from '../players/player';
 
-const keys = {
-  LINK_NES: 'link-nes',
-  LINK_NES_2: 'link-nes-2',
-  LINK_SNES: 'link-snes',
-  LINK_GBC: 'link-gbc',
-  LINK_GBC_JUMPING: 'link-gbc-jumping',
-  DUDE: 'dude',
-  GROUND: 'ground',
-};
+import { LinkNesPlayer } from '../players/LinkNes/LinkNesPlayer';
+import { LinkNes2Player } from '../players/LinkNes2/LinkNes2Player';
+import { LinkSnesPlayer } from '../players/LinkSnes/LinkSnesPlayer';
+import { LinkGbcPlayer } from '../players/LinkGbc/LinkGbcPlayer';
+
+import { LinkSnesSpritesheetFileConfig } from '../players/LinkSnes/LinkSnesSpritesheetFileConfig';
+import { LinkNesSpritesheetFileConfig } from '../players/LinkNes/LinkNesSpritesheetFileConfig';
+import { LinkNes2SpritesheetFileConfig } from '../players/LinkNes2/LinkNes2SpritesheetFileConfig';
+import { LinkGbcSpritesheetFileConfig } from '../players/LinkGbc/LinkGbcSpritesheetFileConfig';
 
 class SandboxScene extends Phaser.Scene {
-  player: any;
+  private player: Player;
+  private platforms: Phaser.GameObjects.Group;
+
+  private keyOne: Phaser.Input.Keyboard.Key;
+  private keyTwo: Phaser.Input.Keyboard.Key;
+  private keyThree: Phaser.Input.Keyboard.Key;
+  private keyFour: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super('sandbox');
   }
 
   preload(): void {
-    this.load.spritesheet(keys.LINK_NES, LinkNESSprites, {
-      frameWidth: 16,
-      frameHeight: 16,
-    });
-    this.load.spritesheet(keys.LINK_NES_2, LinkNES2Sprites, {
-      frameWidth: 16,
-      frameHeight: 32,
-    });
-    this.load.spritesheet(keys.LINK_SNES, LinkSNESSprites, {
-      frameWidth: 16,
-      frameHeight: 24,
-    });
-    this.load.spritesheet(keys.LINK_GBC, LinkGBCSprites, {
-      frameWidth: 16,
-      frameHeight: 16,
-      endFrame: 12,
-    });
-    this.load.spritesheet(keys.LINK_GBC_JUMPING, LinkGBCJumpingSprites, {
-      frameWidth: 16,
-      frameHeight: 32,
-    });
+    this.load.spritesheet(LinkNesSpritesheetFileConfig);
+    this.load.spritesheet(LinkNes2SpritesheetFileConfig);
+    this.load.spritesheet(LinkSnesSpritesheetFileConfig);
+    this.load.spritesheet(LinkGbcSpritesheetFileConfig);
   }
 
   create(): void {
+    let { width, height } = this.sys.game.canvas;
+
     this.cameras.main.setBackgroundColor(0xffffff);
 
-    let platforms: Phaser.GameObjects.Group = this.add.group();
+    this.platforms = this.add.group();
 
-    const r1: Phaser.GameObjects.Rectangle = this.add.rectangle(128, 231, 255, 16, 0x000000);
-    const r2: Phaser.GameObjects.Rectangle = this.add.rectangle(90, 207, 16, 32, 0x000000);
-    const r3: Phaser.GameObjects.Rectangle = this.add.rectangle(192, 183, 128, 16, 0x000000);
+    // Borders
+    const rectangleWidth = 16;
 
+    const borderTop = this.add.rectangle(128, rectangleWidth / 2, width, rectangleWidth, 0x000000);
+    const borderRight = this.add.rectangle(
+      width - rectangleWidth / 2,
+      width / 2,
+      rectangleWidth,
+      width,
+      0x000000,
+    );
+    const borderBottom = this.add.rectangle(
+      width / 2,
+      height - rectangleWidth / 2,
+      width,
+      rectangleWidth,
+      0x000000,
+    );
+    const borderLeft = this.add.rectangle(rectangleWidth / 2, 128, rectangleWidth, width, 0x000000);
+
+    const r1: Phaser.GameObjects.Rectangle = this.add.rectangle(
+      rectangleWidth + 64,
+      208,
+      rectangleWidth,
+      32,
+      0x00000,
+    );
+    const r2: Phaser.GameObjects.Rectangle = this.add.rectangle(
+      184,
+      height - 64,
+      112,
+      rectangleWidth,
+      0x000000,
+    );
+
+    this.physics.add.existing(borderTop, true);
+    this.physics.add.existing(borderRight, true);
+    this.physics.add.existing(borderBottom, true);
+    this.physics.add.existing(borderLeft, true);
     this.physics.add.existing(r1, true);
     this.physics.add.existing(r2, true);
-    this.physics.add.existing(r3, true);
 
-    platforms.add(r1);
-    platforms.add(r2);
-    platforms.add(r3);
+    this.platforms.add(borderTop);
+    this.platforms.add(borderRight);
+    this.platforms.add(borderBottom);
+    this.platforms.add(borderLeft);
+    this.platforms.add(r1);
+    this.platforms.add(r2);
 
-    this.player = new LinkNESPlayer(this, 50, 100, keys.LINK_NES);
-    // this.player1 = new LinkNES2Player(this, 50, 100, keys.LINK_NES_2);
-    // this.player1 = new LinkSNESPlayer(this, 50, 100, keys.LINK_SNES);
-    // this.player1 = new LinkGBCPlayer(this, 50, 50, keys.LINK_GBC);
+    const text = this.add.text(
+      rectangleWidth * 1.5,
+      rectangleWidth * 1.5,
+      'Swap player!\n1. Link NES\n2. Link NES 2\n3. Link SNES\n4. Link GBC',
+      {
+        color: '#000000',
+      },
+    );
 
-    this.physics.add.collider(this.player, platforms);
+    this.keyOne = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
+    this.keyTwo = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+    this.keyThree = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
+    this.keyFour = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
+
+    this.setPlayer(LinkNesSpritesheetFileConfig);
+  }
+
+  setPlayer(spritesheetFileConfig: Phaser.Types.Loader.FileTypes.SpriteSheetFileConfig): void {
+    // Return if is the actual one
+    if (this.player?.texture.key === spritesheetFileConfig.key) {
+      return;
+    }
+
+    const { key, frameConfig } = spritesheetFileConfig;
+    let x, y;
+
+    if (this.player) {
+      x = this.player.x;
+      y = this.player.y + this.player.height / 2 - frameConfig.frameHeight / 2;
+      this.player?.destroy();
+    } else {
+      x = 50;
+      y = 50;
+    }
+
+    if (key === LinkNesSpritesheetFileConfig.key) {
+      this.player = new LinkNesPlayer(this, x, y, key);
+    } else if (key === LinkNes2SpritesheetFileConfig.key) {
+      this.player = new LinkNes2Player(this, x, y, key);
+    } else if (key === LinkSnesSpritesheetFileConfig.key) {
+      this.player = new LinkSnesPlayer(this, x, y, key);
+    } else if (key === LinkGbcSpritesheetFileConfig.key) {
+      this.player = new LinkGbcPlayer(this, x, y, key);
+    }
+
+    this.physics.add.collider(this.player, this.platforms);
   }
 
   update(time: number, delta: number): void {
+    if (this.keyOne.isDown) {
+      this.setPlayer(LinkNesSpritesheetFileConfig);
+    } else if (this.keyTwo.isDown) {
+      this.setPlayer(LinkNes2SpritesheetFileConfig);
+    } else if (this.keyThree.isDown) {
+      this.setPlayer(LinkSnesSpritesheetFileConfig);
+    } else if (this.keyFour.isDown) {
+      this.setPlayer(LinkGbcSpritesheetFileConfig);
+    }
+
     if (this.player) {
       this.player.update(time);
     }

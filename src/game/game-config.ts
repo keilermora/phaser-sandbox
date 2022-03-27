@@ -3,8 +3,9 @@ import SandboxScene from './scenes/sandbox.scene';
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 256,
+  height: 240,
+  zoom: 3,
   physics: {
     default: 'arcade',
     arcade: {
@@ -12,6 +13,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     },
   },
   scene: [SandboxScene],
+  pixelArt: true,
 };
 
 export default gameConfig;
