@@ -40,38 +40,51 @@ class SandboxScene extends Phaser.Scene {
     this.platforms = this.add.group();
 
     // Borders
-    const rectangleWidth = 16;
-
-    const borderTop = this.add.rectangle(128, rectangleWidth / 2, width, rectangleWidth, 0x000000);
-    const borderRight = this.add.rectangle(
-      width - rectangleWidth / 2,
-      width / 2,
-      rectangleWidth,
+    const borderWidth: number = 16;
+    const borderColor: number = 0x000000;
+    const borderTop: Phaser.GameObjects.Rectangle = this.add.rectangle(
+      128,
+      borderWidth / 2,
       width,
-      0x000000,
+      borderWidth,
+      borderColor,
     );
-    const borderBottom = this.add.rectangle(
+    const borderRight: Phaser.GameObjects.Rectangle = this.add.rectangle(
+      width - borderWidth / 2,
       width / 2,
-      height - rectangleWidth / 2,
+      borderWidth,
       width,
-      rectangleWidth,
-      0x000000,
+      borderColor,
     );
-    const borderLeft = this.add.rectangle(rectangleWidth / 2, 128, rectangleWidth, width, 0x000000);
+    const borderBottom: Phaser.GameObjects.Rectangle = this.add.rectangle(
+      width / 2,
+      height - borderWidth / 2,
+      width,
+      borderWidth,
+      borderColor,
+    );
+    const borderLeft: Phaser.GameObjects.Rectangle = this.add.rectangle(
+      borderWidth / 2,
+      128,
+      borderWidth,
+      width,
+      borderColor,
+    );
 
+    // Platforms
     const r1: Phaser.GameObjects.Rectangle = this.add.rectangle(
-      rectangleWidth + 64,
+      borderWidth + 64,
       208,
-      rectangleWidth,
+      borderWidth,
       32,
-      0x00000,
+      borderColor,
     );
     const r2: Phaser.GameObjects.Rectangle = this.add.rectangle(
       184,
       height - 64,
       112,
-      rectangleWidth,
-      0x000000,
+      borderWidth,
+      borderColor,
     );
 
     this.physics.add.existing(borderTop, true);
@@ -88,9 +101,9 @@ class SandboxScene extends Phaser.Scene {
     this.platforms.add(r1);
     this.platforms.add(r2);
 
-    const text = this.add.text(
-      rectangleWidth * 1.5,
-      rectangleWidth * 1.5,
+    this.add.text(
+      borderWidth * 1.5,
+      borderWidth * 1.5,
       'Swap player!\n1. Link NES\n2. Link NES 2\n3. Link SNES\n4. Link GBC',
       {
         color: '#000000',
@@ -105,8 +118,12 @@ class SandboxScene extends Phaser.Scene {
     this.setPlayer(LinkNesSpritesheetFileConfig);
   }
 
+  /**
+   * Set the current player
+   * @param {Phaser.Types.Loader.FileTypes.SpriteSheetFileConfig} spritesheetFileConfig
+   */
   setPlayer(spritesheetFileConfig: Phaser.Types.Loader.FileTypes.SpriteSheetFileConfig): void {
-    // Return if is the actual one
+    // Do nothing if the player is the actual one
     if (this.player?.texture.key === spritesheetFileConfig.key) {
       return;
     }
@@ -114,15 +131,23 @@ class SandboxScene extends Phaser.Scene {
     const { key, frameConfig } = spritesheetFileConfig;
     let x, y;
 
+    // Check if the player exists
     if (this.player) {
       x = this.player.x;
+
+      // We must calculate the player actual position starting at the bottom of the sprite, because
+      // the next player may have a different height
       y = this.player.y + this.player.height / 2 - frameConfig.frameHeight / 2;
+
+      // Remove te current player
       this.player?.destroy();
     } else {
+      // If the player doesn't exists, then sets a default start position
       x = 50;
       y = 50;
     }
 
+    // Create the current player
     if (key === LinkNesSpritesheetFileConfig.key) {
       this.player = new LinkNesPlayer(this, x, y, key);
     } else if (key === LinkNes2SpritesheetFileConfig.key) {
@@ -133,6 +158,7 @@ class SandboxScene extends Phaser.Scene {
       this.player = new LinkGbcPlayer(this, x, y, key);
     }
 
+    // Add collisions to the recently created player
     this.physics.add.collider(this.player, this.platforms);
   }
 
