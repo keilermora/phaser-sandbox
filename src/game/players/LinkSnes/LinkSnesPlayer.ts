@@ -27,11 +27,11 @@ export class LinkSnesPlayer extends Player {
 
     this.scene.anims.create({
       key: LinkSnesAnimationKeysEnum.IDLE_UP,
-      frames: [{ key: texture, frame: 18 }],
+      frames: [{ key: texture, frame: 32 }],
     });
     this.scene.anims.create({
       key: LinkSnesAnimationKeysEnum.IDLE_SIDE,
-      frames: [{ key: texture, frame: 9 }],
+      frames: [{ key: texture, frame: 16 }],
     });
     this.scene.anims.create({
       key: LinkSnesAnimationKeysEnum.IDLE_DOWN,
@@ -39,13 +39,13 @@ export class LinkSnesPlayer extends Player {
     });
     this.scene.anims.create({
       key: LinkSnesAnimationKeysEnum.WALKING_UP,
-      frames: this.scene.anims.generateFrameNumbers(texture, { start: 19, end: 26 }),
+      frames: this.scene.anims.generateFrameNumbers(texture, { start: 33, end: 40 }),
       frameRate: 15,
       repeat: -1,
     });
     this.scene.anims.create({
       key: LinkSnesAnimationKeysEnum.WALKING_SIDE,
-      frames: this.scene.anims.generateFrameNumbers(texture, { start: 10, end: 17 }),
+      frames: this.scene.anims.generateFrameNumbers(texture, { start: 17, end: 24 }),
       frameRate: 15,
       repeat: -1,
     });

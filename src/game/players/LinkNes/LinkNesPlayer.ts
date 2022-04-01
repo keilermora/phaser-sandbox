@@ -29,13 +29,13 @@ export class LinkNesPlayer extends Player {
     });
     this.scene.anims.create({
       key: LinkNesAnimationKeysEnum.WALKING_SIDE,
-      frames: this.scene.anims.generateFrameNumbers(texture, { start: 2, end: 3 }),
+      frames: this.scene.anims.generateFrameNumbers(texture, { start: 3, end: 4 }),
       frameRate: 10,
       repeat: -1,
     });
     this.scene.anims.create({
       key: LinkNesAnimationKeysEnum.WALKING_UP,
-      frames: this.scene.anims.generateFrameNumbers(texture, { start: 4, end: 5 }),
+      frames: this.scene.anims.generateFrameNumbers(texture, { start: 6, end: 7 }),
       frameRate: 10,
       repeat: -1,
     });
