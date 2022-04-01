@@ -143,8 +143,8 @@ class SandboxScene extends Phaser.Scene {
       this.player?.destroy();
     } else {
       // If the player doesn't exists, then sets a default start position
-      x = 50;
-      y = 50;
+      x = 45;
+      y = 195;
     }
 
     // Create the current player
